@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:meals_app/screens/tabs.dart';
 // import 'package:meals_app/widgets/main_drawer.dart';
 
-enum Filters {
+enum Filter {
   glutenFree,
   lactoseFree,
   vegan,
@@ -10,7 +10,9 @@ enum Filters {
 }
 
 class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({super.key});
+  const FiltersScreen({super.key, required this.currentFilters});
+
+  final Map<Filter, bool> currentFilters;
 
   @override
   State<FiltersScreen> createState() => _FiltersScreenState();
@@ -21,6 +23,15 @@ class _FiltersScreenState extends State<FiltersScreen> {
   var _isLactoseFree = false;
   var _isVegan = false;
   var _isVegetarian = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isGlutenFree = widget.currentFilters[Filter.glutenFree]!;
+    _isLactoseFree = widget.currentFilters[Filter.lactoseFree]!;
+    _isVegan = widget.currentFilters[Filter.vegan]!;
+    _isVegetarian = widget.currentFilters[Filter.vegetarian]!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +58,10 @@ class _FiltersScreenState extends State<FiltersScreen> {
 
           // Manually pop with the data you want to return
           Navigator.of(context).pop({
-            Filters.glutenFree: _isGlutenFree,
-            Filters.lactoseFree: _isLactoseFree,
-            Filters.vegan: _isVegan,
-            Filters.vegetarian: _isVegetarian,
+            Filter.glutenFree: _isGlutenFree,
+            Filter.lactoseFree: _isLactoseFree,
+            Filter.vegan: _isVegan,
+            Filter.vegetarian: _isVegetarian,
           });
         },
         child: Column(
