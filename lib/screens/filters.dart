@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:meals_app/screens/tabs.dart';
 // import 'package:meals_app/widgets/main_drawer.dart';
+import 'package:meals_app/providers/filters_provider.dart';
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegan,
-  vegetarian,
-}
-
-class FiltersScreen extends StatefulWidget {
-  const FiltersScreen({super.key, required this.currentFilters});
-
-  final Map<Filter, bool> currentFilters;
+class FiltersScreen extends ConsumerStatefulWidget {
+  const FiltersScreen({super.key});
 
   @override
-  State<FiltersScreen> createState() => _FiltersScreenState();
+  ConsumerState<FiltersScreen> createState() => _FiltersScreenState();
 }
 
-class _FiltersScreenState extends State<FiltersScreen> {
+class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   var _isGlutenFree = false;
   var _isLactoseFree = false;
   var _isVegan = false;
@@ -27,10 +20,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
   @override
   void initState() {
     super.initState();
-    _isGlutenFree = widget.currentFilters[Filter.glutenFree]!;
-    _isLactoseFree = widget.currentFilters[Filter.lactoseFree]!;
-    _isVegan = widget.currentFilters[Filter.vegan]!;
-    _isVegetarian = widget.currentFilters[Filter.vegetarian]!;
+    final filters = ref.read(filtersProvider);
+    _isGlutenFree = filters[Filter.glutenFree]!;
+    _isLactoseFree = filters[Filter.lactoseFree]!;
+    _isVegan = filters[Filter.vegan]!;
+    _isVegetarian = filters[Filter.vegetarian]!;
   }
 
   @override
@@ -54,15 +48,17 @@ class _FiltersScreenState extends State<FiltersScreen> {
       body: PopScope(
         canPop: false, // Prevents system from popping without our data
         onPopInvokedWithResult: (bool didPop, dynamic result) {
-          if (didPop) return; // Already popped, do nothing
-
-          // Manually pop with the data you want to return
-          Navigator.of(context).pop({
+          ref.read(filtersProvider.notifier).setFilters({
             Filter.glutenFree: _isGlutenFree,
             Filter.lactoseFree: _isLactoseFree,
             Filter.vegan: _isVegan,
             Filter.vegetarian: _isVegetarian,
           });
+
+          if (didPop) return; // Already popped, do nothing
+
+          // Manually pop with the data you want to return
+          Navigator.of(context).pop();
         },
         child: Column(
           children: [
